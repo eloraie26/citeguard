@@ -1,127 +1,74 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CiteGuard — catch AI's mistakes before they cost you</title>
-<meta name="description" content="Paste any AI answer. CiteGuard recomputes every number and flags every unverifiable claim — deterministically. An AI answer with a receipt you can show a judge."/>
+<title>CiteGuard — see what's proven, sourced, or guessed in any AI answer</title>
+<meta name="description" content="Paste any AI answer. CiteGuard lights up what's proven, what's sourced, what's a prediction, and what the AI simply made up. Deterministic, in your browser, nothing uploaded."/>
 <style>
- :root{--ink:#0a0a0a;--mut:#6b7280;--line:#e7e7e9;--ok:#0a7d23;--bad:#d61f1f;--warn:#b25e00;--bg:#fff}
+ :root{--ink:#06070a;--mut:#8a8f98;--line:#ececf0;--proven:#0a8a2e;--wrong:#d61f1f;--sourced:#0a6cff;--pred:#c07a00;--unv:#9aa0a8;--bg:#fff}
  *{box-sizing:border-box;margin:0;padding:0}
- body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;background:var(--bg)}
- .wrap{max-width:880px;margin:0 auto;padding:0 24px}
- nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0;font-weight:600}
- nav .brand{font-size:19px;letter-spacing:-.02em}nav a{color:var(--ink);text-decoration:none;font-size:15px;font-weight:500;opacity:.8}
- .hero{text-align:center;padding:80px 0 40px}
- .hero h1{font-size:clamp(36px,6.5vw,64px);letter-spacing:-.04em;line-height:1.04;font-weight:700}
- .hero p.sub{font-size:clamp(17px,2.4vw,22px);color:var(--mut);max-width:640px;margin:22px auto 0;letter-spacing:-.01em}
- .tool{margin:36px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 1px 40px rgba(0,0,0,.05)}
- .tool .top{padding:12px 18px;background:#0a0a0a;color:#fff;font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
- textarea{width:100%;border:0;padding:20px;font-size:15px;font-family:ui-monospace,Menlo,monospace;resize:vertical;min-height:130px;outline:none;color:var(--ink)}
- .bar{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
- .btn{padding:12px 22px;border-radius:980px;font-size:15px;font-weight:600;text-decoration:none;border:0;cursor:pointer;transition:.15s;display:inline-block}
- .btn.primary{background:var(--ink);color:#fff}.btn.primary:hover{opacity:.88}
- .btn.ghost{background:#f2f2f4;color:var(--ink)}
- .link{font-size:14px;color:var(--mut);cursor:pointer;text-decoration:underline}
- #receipt{padding:6px 18px 18px}
- .row{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);align-items:flex-start;font-size:14.5px}
- .tag{font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;letter-spacing:.02em}
- .v{background:#e3f6e7;color:var(--ok)}.f{background:#fde6e6;color:var(--bad)}.r{background:#fdf0e0;color:var(--warn)}
- .mono{font-family:ui-monospace,Menlo,monospace;color:var(--mut);font-size:13px;margin-top:3px}
- .verdict{margin:14px 18px 0;padding:14px 18px;border-radius:12px;font-weight:700}
- .verdict.no{background:#fde6e6;color:var(--bad)}.verdict.ok{background:#e3f6e7;color:var(--ok)}.verdict.rev{background:#fdf0e0;color:var(--warn)}
- section{padding:64px 0;border-top:1px solid var(--line)}h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.03em;text-align:center}
- .lead{text-align:center;color:var(--mut);max-width:600px;margin:14px auto 0;font-size:17px}
- .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:40px}
- .card{padding:26px;border:1px solid var(--line);border-radius:16px}.card h3{font-size:18px}.card p{color:var(--mut);margin-top:8px;font-size:15px}
- .price{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-top:40px}
- .tier{border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}.tier.feat{border:2px solid var(--ink)}
- .tier .amt{font-size:38px;font-weight:700;letter-spacing:-.03em;margin:8px 0}.tier .amt span{font-size:15px;color:var(--mut);font-weight:500}
- footer{padding:44px 0;border-top:1px solid var(--line);text-align:center;color:var(--mut);font-size:14px}
+ html,body{height:100%}
+ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Helvetica,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45;display:flex;flex-direction:column;min-height:100%}
+ .top{padding:26px 28px;font-weight:600;font-size:18px;letter-spacing:-.02em}
+ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0 24px}
+ .hero{max-width:680px;text-align:center;margin-top:9vh}
+ h1{font-size:clamp(34px,6vw,60px);letter-spacing:-.045em;line-height:1.03;font-weight:700}
+ .sub{font-size:clamp(16px,2.4vw,21px);color:var(--mut);margin-top:18px;letter-spacing:-.01em}
+ .box{width:100%;max-width:680px;margin:34px auto 0}
+ textarea{width:100%;min-height:128px;border:1px solid var(--line);border-radius:18px;padding:20px 22px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
+ textarea:focus{border-color:#c9ccd2;box-shadow:0 1px 44px rgba(0,0,0,.08)}
+ .actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:18px}
+ button{appearance:none;border:0;background:var(--ink);color:#fff;font-size:16px;font-weight:600;padding:14px 30px;border-radius:980px;cursor:pointer;transition:.15s;font-family:inherit}
+ button:hover{transform:translateY(-1px)}
+ .samp{color:var(--mut);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+ #out{width:100%;max-width:680px;margin:30px auto 60px}
+ .verdict{font-size:15px;font-weight:600;text-align:center;margin-bottom:16px;color:var(--mut)}
+ .claim{display:flex;gap:14px;align-items:flex-start;padding:15px 4px;border-top:1px solid var(--line)}
+ .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:7px}
+ .lab{font-size:11px;font-weight:700;letter-spacing:.06em;flex:none;width:92px;padding-top:3px}
+ .ctext{font-size:16px}.why{font-size:13px;color:var(--mut);margin-top:3px}
+ footer{text-align:center;color:var(--mut);font-size:13px;padding:26px}
+ .lp{color:var(--proven)}.lw{color:var(--wrong)}.ls{color:var(--sourced)}.lpr{color:var(--pred)}.lu{color:var(--unv)}
+ .dp{background:var(--proven)}.dw{background:var(--wrong)}.ds{background:var(--sourced)}.dpr{background:var(--pred)}.du{background:var(--unv)}
 </style></head><body>
-<div class="wrap">
- <nav><div class="brand">⬡ CiteGuard</div><div><a href="#how">How</a> &nbsp;·&nbsp; <a href="#pricing">Pricing</a> &nbsp;·&nbsp; <a href="#get">Early access</a></div></nav>
- <header class="hero">
-  <h1>Catch AI's mistakes<br>before they cost you.</h1>
-  <p class="sub">Paste any AI answer. CiteGuard re-checks every number and flags every claim it can't verify — instantly, in your browser, nothing uploaded. It can't be wrong, because it never guesses.</p>
- </header>
-
- <div class="tool">
-  <div class="top"><span>⬡ PROOF RECEIPT — paste AI text, get a verdict</span><span id="stamp">deterministic · no AI · no upload</span></div>
-  <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini… (try one with numbers in it)"></textarea>
-  <div class="bar">
-   <button class="btn primary" onclick="run()">Verify it →</button>
-   <span class="link" onclick="sample()">or try a sample with a hidden error</span>
-  </div>
-  <div id="vout"></div><div id="receipt"></div>
+<div class="top">⬡ CiteGuard</div>
+<main>
+ <div class="hero">
+  <h1>Is your AI telling the truth?</h1>
+  <div class="sub">Paste any AI answer. We light up what's <b style="color:var(--proven)">proven</b>, what's <b style="color:var(--sourced)">sourced</b>, what's a <b style="color:var(--pred)">prediction</b> — and what it simply <b style="color:var(--wrong)">made up</b>.</div>
  </div>
- <p class="lead" style="margin-top:14px;font-size:14px">CiteGuard recomputes arithmetic exactly and flags everything else for a human. What you see is the actual engine — not a mockup.</p>
-</div>
-
-<section id="how"><div class="wrap">
- <h2>Why an AI can't check itself</h2>
- <p class="lead">You can't ask the thing that made the mistake to find the mistake. CiteGuard is a different kind of engine — symbolic, exact, auditable.</p>
- <div class="grid">
-  <div class="card"><h3>Exact, not predicted</h3><p>Every number is recomputed. A verdict, not a vibe.</p></div>
-  <div class="card"><h3>Honest by design</h3><p>What it can't verify, it flags for you — it never fills the gap with a guess.</p></div>
-  <div class="card"><h3>A receipt you can defend</h3><p>A clean record of what was checked — to show a client, a court, an auditor.</p></div>
+ <div class="box">
+  <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini…"></textarea>
+  <div class="actions"><button onclick="run()">Check it</button><span class="samp" onclick="sample()">try an example</span></div>
  </div>
-</div></section>
-
-<section id="pricing"><div class="wrap">
- <h2>Pricing</h2><p class="lead">Founder pricing for early users. You join a waitlist — you are not charged today.</p>
- <div class="price">
-  <div class="tier"><h3>Free</h3><div class="amt">$0</div><p style="color:var(--mut)">Paste-and-check, right here. Forever.</p></div>
-  <div class="tier feat"><h3>Pro</h3><div class="amt">$29<span>/mo</span></div><p style="color:var(--mut)">Save receipts, bulk-check documents, citation database.</p></div>
-  <div class="tier"><h3>API / Firm</h3><div class="amt">Let's talk</div><p style="color:var(--mut)">Proof Receipts inside your own product or practice.</p></div>
- </div>
-</div></section>
-
-<section id="get"><div class="wrap" style="text-align:center">
- <h2>Get early access</h2><p class="lead">Be first to file, advise, or ship with a receipt. We'll reach out personally.</p>
- <div style="margin-top:30px"><a class="btn primary" id="join">Request early access →</a></div>
-</div></section>
-
-<footer><div class="wrap">CiteGuard · Deterministic verification for AI · Nothing leaves your device · © 2026</div></footer>
+ <div id="out"></div>
+</main>
+<footer>Deterministic · runs in your browser · nothing is uploaded · © 2026 CiteGuard</footer>
 <script>
-// --- the actual engine, client-side: extract NUM (op NUM)* = NUM, recompute exactly, never guess ---
-function num(t){var s='';for(var i=0;i<t.length;i++){var c=t[i];if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}if(s===''||s==='.'||s==='-')return null;var n=Number(s);return isNaN(n)?null:n;}
+function num(t){var s='';for(const c of t){if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}return (s===''||s==='.'||s==='-')?null:(isNaN(+s)?null:+s);}
 function isOp(t){return t==='×'||t==='x'||t==='*'||t==='÷'||t==='/'||t==='+'||t==='-';}
 function opf(o){return (o==='×'||o==='x'||o==='*')?'*':(o==='÷'||o==='/')?'/':o;}
-function evalSeq(nums,ops){ // precedence: * / then + -
- var n=nums.slice(),o=ops.slice();
- for(var i=0;i<o.length;){if(o[i]==='*'||o[i]==='/'){var r=o[i]==='*'?n[i]*n[i+1]:n[i]/n[i+1];n.splice(i,2,r);o.splice(i,1);}else i++;}
- var acc=n[0];for(var j=0;j<o.length;j++)acc=o[j]==='+'?acc+n[j+1]:acc-n[j+1];return acc;}
-function verify(text){
- var toks=text.replace(/=/g,' = ').split(/\s+/).filter(Boolean);
- var claims=[],used=0;
- for(var i=0;i<toks.length;i++){
-  if(toks[i]==='='){ var right=num(toks[i+1]); if(right===null)continue;
-   // walk left: NUM (OP NUM)*
-   var nums=[],ops=[],k=i-1,expectNum=true,ok=true;
-   while(k>=0){ if(expectNum){var v=num(toks[k]); if(v===null){break;} nums.unshift(v); expectNum=false; k--;}
-     else { if(isOp(toks[k])){ops.unshift(opf(toks[k]));expectNum=true;k--;} else break; } }
-   if(nums.length>=2 && ops.length===nums.length-1 && !expectNum){
-    var got=evalSeq(nums,ops);
-    var pass=Math.abs(got-right)<=Math.max(1e-6,Math.abs(right)*1e-9);
-    var expr=nums.map(function(x,ix){return (ix?(' '+(ops[ix-1])+' '):'')+x;}).join('');
-    claims.push({verdict:pass?'VERIFIED':'FAILED',text:expr+' = '+right,basis:pass?('recomputed = '+got):('recomputed = '+got+' — claimed '+right+' is WRONG')});
-    used++;
-   }
-  }
- }
- return claims;
+function unitOf(t){if(!t)return '';var s='';for(const c of t){if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))s+=c;else break;}return (s.length>0&&s.length<=5)?s.toLowerCase():'';}
+function evalSeq(n,o){n=n.slice();o=o.slice();for(var i=0;i<o.length;){if(o[i]==='*'||o[i]==='/'){var r=o[i]==='*'?n[i]*n[i+1]:n[i]/n[i+1];n.splice(i,2,r);o.splice(i,1);}else i++;}var a=n[0];for(var j=0;j<o.length;j++)a=o[j]==='+'?a+n[j+1]:a-n[j+1];return a;}
+function arithmetic(text){var sp='';for(const c of text)sp+=(c==='=')?' = ':c;var t=sp.split(/\s+/).filter(Boolean);
+ for(var i=0;i<t.length;i++){if(t[i]==='='){var r=num(t[i+1]);if(r===null)continue;var ru=unitOf(t[i+2]);var ns=[],os=[],us=[],k=i-1,en=true,pe='';
+  while(k>=0){if(en){var u=unitOf(t[k]);if(u&&pe===''){pe=u;k--;continue;}var v=num(t[k]);if(v===null)break;ns.unshift(v);us.unshift(pe);pe='';en=false;k--;}else{if(isOp(t[k])){os.unshift(opf(t[k]));en=true;k--;}else break;}}
+  if(ns.length>=2&&os.length===ns.length-1&&!en){var au=us.concat([ru]).filter(x=>x!=='');if([...new Set(au)].length>1)continue;var g=evalSeq(ns,os);return {found:true,ok:Math.abs(g-r)<=Math.max(1e-6,Math.abs(r)*1e-9),got:Math.round(g*100)/100,claimed:r};}}}
+ return {found:false};}
+function has(L,arr){return arr.some(w=>L.includes(w));}
+function classify(s){var L=s.toLowerCase();
+ var a=arithmetic(s); if(a.found) return a.ok?['PROVEN','lp','dp','recomputed exactly = '+a.got]:['MADE UP','lw','dw','recomputed '+a.got+' — the text claims '+a.claimed];
+ var q=(s.match(/"/g)||[]).length;
+ if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||q>=2) return ['SOURCED','ls','ds','traces to a source — verify it says this'];
+ if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','dpr','an estimate — not an absolute fact'];
+ return ['UNVERIFIED','lu','du','asserted with no proof or source — check it'];
 }
-function render(claims,hadText){
- var cls={'VERIFIED':'v','FAILED':'f','NEEDS REVIEW':'r'};
- var fail=claims.filter(function(c){return c.verdict==='FAILED';}).length;
- var rcp=document.getElementById('receipt'),vo=document.getElementById('vout');
- if(!hadText){rcp.innerHTML='';vo.innerHTML='';return;}
- if(claims.length===0){vo.innerHTML='<div class="verdict rev">No arithmetic claims found to verify. CiteGuard checks numbers exactly; prose claims are flagged for human review — never guessed.</div>';rcp.innerHTML='';return;}
- vo.innerHTML='<div class="verdict '+(fail>0?'no">⛔ DO-NOT-SEND — '+fail+' false number'+(fail>1?'s':'')+' found':'ok">✓ All '+claims.length+' numbers check out')+'</div>';
- var h='';claims.forEach(function(c){h+='<div class="row"><span class="tag '+cls[c.verdict]+'">'+c.verdict+'</span><div><div>'+c.text+'</div><div class="mono">'+c.basis+'</div></div></div>';});
- rcp.innerHTML=h;
-}
-function run(){var t=document.getElementById('inp').value;render(verify(t),t.trim().length>0);}
-function sample(){document.getElementById('inp').value="Based on your contract, the penalty is 3 missed payments × $1,250 = $3,750, plus 8% interest of $3,750 × 1.08 = $4,080, for a total of $3,750 + $4,080 = $7,830. The deposit of $2,000 × 1.5 = $3,000 is also forfeit.";run();}
-// waitlist → Owner email (working)
-document.getElementById('join').href="mailto:samthedog2k2@yahoo.com?subject=CiteGuard%20early%20access&body=Name%3A%0AFirm%2Forg%3A%0AWhat%20you%27d%20use%20it%20for%3A";
+function split(text){var t=text;['U.S.C.','U.S.','v.','Inc.','No.','et al.','Dr.','Mr.','Mrs.','St.','Fig.'].forEach(a=>{t=t.split(a).join(a.replace(/\./g,'∯'));});
+ return t.split(/(?<=[.?!])\s+/).map(x=>x.split('∯').join('.').trim()).filter(x=>x.length>1);}
+function run(){var text=document.getElementById('inp').value.trim();var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
+ var rows=split(text).map(classify);var made=rows.filter(r=>r[0]==='MADE UP').length;
+ var v=made>0?'<span style="color:var(--wrong)">⛔ '+made+' fabricated claim'+(made>1?'s':'')+' found — do not trust as-is</span>':'no fabrications caught — see each claim below';
+ var h='<div class="verdict">'+v+'</div>';
+ split(text).forEach((s,i)=>{var [lab,lc,dc,why]=rows[i];h+='<div class="claim"><span class="dot '+dc+'"></span><span class="lab '+lc+'">'+lab+'</span><div><div class="ctext">'+s+'</div><div class="why">'+why+'</div></div></div>';});
+ out.innerHTML=h;}
+function sample(){document.getElementById('inp').value="Your refund is 3 × $400 = $1,200. Under 17 U.S.C. § 107 this qualifies as fair use. There is a 70% chance of rain tomorrow. The new policy will save $50,000 × 1.1 = $60,000 annually. Napoleon was born in 1769.";run();}
 </script></body></html>
