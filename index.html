@@ -70,7 +70,7 @@ var SUBJECTS=[
  ['History & Facts','history, geography, general','Napoleon was born in 1769. The Eiffel Tower is located in Paris. The Great Wall of China is over 13,000 miles long.'],
  ['Business','economics, taxes, marketing','A company with $80,000 income owes $80,000 × 0.22 = $17,600 in tax. Gross margin was $50 − $30 = $20 per unit.'],
 ];
-var SUBJ=0,LASTCLAIMS=[],LASTROWS=[];
+var SUBJ=0,LASTCLAIMS=[],LASTROWS=[],COUNCIL_URL='';
 function chips(){var c=document.getElementById('chips');var h='';for(var i=0;i<SUBJECTS.length;i++)h+='<span class="chip'+(i===SUBJ?' on':'')+'" onclick="pick('+i+')">'+SUBJECTS[i][0]+'</span>';c.innerHTML=h;}
 function pick(i){SUBJ=i;chips();document.getElementById('inp').placeholder='Paste an AI answer'+(i>0?' about '+SUBJECTS[i][0].toLowerCase():'')+'…';}
 chips();
@@ -119,9 +119,14 @@ function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML='CML can’
   });
  }).catch(function(){el.innerHTML='Live source lookup unavailable — verify it yourself.';});}
 function checkWiki(){for(var g=0;g<LASTCLAIMS.length;g++){if(LASTROWS[g][0]==='NEEDS A SOURCE'){var el=document.getElementById('g'+g);if(el){el.innerHTML='Checking Wikipedia…';ground(LASTCLAIMS[g],el);}}}}
-function council(){if(document.getElementById('cpanel'))return;var p=document.createElement('div');p.id='cpanel';p.className='panel';
- p.innerHTML='<b>Council of Models</b> asks several frontier AIs the same question and reports where they <b>agree</b> — the strongest confidence short of proof.<br><br><b>Honest status:</b> frontier models (Perplexity, GPT, Claude, Gemini) are <b>not free and can’t be called from a webpage</b>, so this needs API keys + a small backend — the next build. Today: <b>CML proves the math</b>; <b>Wikipedia checks the facts</b>; the model-council adds multi-model agreement next.';
- document.getElementById('out').appendChild(p);}
+function council(){var out=document.getElementById('out');
+ if(!COUNCIL_URL){if(document.getElementById('cpanel'))return;var p0=document.createElement('div');p0.id='cpanel';p0.className='panel';p0.innerHTML='<b>Council of Models</b> asks several frontier AIs the same question and reports where they <b>agree</b> — the strongest confidence short of proof.<br><br><b>To turn it on:</b> deploy the backend (answer-verifier/council-backend), set one valid model key as a server-side env var, and put its URL in COUNCIL_URL at the top of this script. Until then: <b>CML proves the math</b> and <b>Wikipedia checks the facts</b>.';out.appendChild(p0);return;}
+ var q=document.getElementById('inp').value.slice(0,2000);var ex=document.getElementById('cpanel');if(ex)ex.remove();
+ var p=document.createElement('div');p.id='cpanel';p.className='panel';p.innerHTML='Asking the council…';out.appendChild(p);
+ fetch(COUNCIL_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:'Fact-check this and state what is actually true: '+q})}).then(function(r){return r.json();}).then(function(j){
+  var h='<b>Council of Models — '+((j.consensus&&j.consensus.band)||'')+'</b><br><span style="color:var(--mut)">'+((j.consensus&&j.consensus.note)||'')+'</span><br><br>';
+  (j.members||[]).forEach(function(m){h+='<div style="margin:6px 0">'+(m.ok?'✅ <b>'+m.model+'</b>: '+m.answer:'❌ <b>'+m.model+'</b> ('+m.error+')')+'</div>';});
+  p.innerHTML=h;}).catch(function(e){p.innerHTML='Council backend unreachable — check COUNCIL_URL and that it is deployed.';});}
 function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/g,'');var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
  var claims=splitC(text),rows=[];for(var i=0;i<claims.length;i++)rows.push(classify(claims[i]));LASTCLAIMS=claims;LASTROWS=rows;
  function cc(n){var k=0;for(var i=0;i<rows.length;i++)if(rows[i][0]===n)k++;return k;}
