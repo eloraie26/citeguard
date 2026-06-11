@@ -116,11 +116,21 @@ function ucanon(u){u=u.toLowerCase();var o="";for(var i=0;i<u.length;i++){if(u[i
 function utoB(v,sp){var p=sp.split(":");if(p[0]==="temp"){if(p[1]==="C")return v+273.15;if(p[1]==="F")return (v-32)*5/9+273.15;return v;}return v*(+p[1]);}
 function ufrB(b,sp){var p=sp.split(":");if(p[0]==="temp"){if(p[1]==="C")return b-273.15;if(p[1]==="F")return (b-273.15)*9/5+32;return b;}return b/(+p[1]);}
 function convert(stmt){var s="";for(var z=0;z<stmt.length;z++){var c=stmt[z];s+=(c==="=")?" = ":(c==="°"?" ":c);}var t=pspl(s);var eq=t.indexOf("=");if(eq<1)return null;var X=nHS(t[0]);var uA=t[1]?ucanon(t[1]):null;if(X===null||!uA)return null;var Y=nHS(t[eq+1]);var uB=t[eq+2]?ucanon(t[eq+2]):null;if(Y===null||!uB)return null;var dA=uA.split(":")[0],dB=uB.split(":")[0];if(dA!==dB)return {verdict:"WRONG",why:"these are not the same kind of measurement ("+dA+" vs "+dB+") — they cannot be equal"};var got=ufrB(utoB(X,uA),uB);var gr=Math.round(got*100)/100;var ok=Math.abs(got-Y)<=Math.max(0.05,Math.abs(got)*0.02);return ok?{verdict:"VERIFIED",why:"(= "+gr+")"}:{verdict:"WRONG",why:X+" "+t[1]+" = "+gr+" "+t[eq+2]+", not "+Y};}
+var DMON={jan:1,january:1,feb:2,february:2,mar:3,march:3,apr:4,april:4,may:5,jun:6,june:6,jul:7,july:7,aug:8,august:8,sep:9,sept:9,september:9,oct:10,october:10,nov:11,november:11,dec:12,december:12};
+function djdn(y,m,d){var a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+function dfromJdn(J){var a=J+32044,b=Math.floor((4*a+3)/146097),c=a-Math.floor(146097*b/4),d=Math.floor((4*c+3)/1461),e=c-Math.floor(1461*d/4),m=Math.floor((5*e+2)/153);return {d:e-Math.floor((153*m+2)/5)+1,m:m+3-12*Math.floor(m/10),y:100*b+d-4800+Math.floor(m/10)};}
+var DMN=["","January","February","March","April","May","June","July","August","September","October","November","December"];
+function djstr(J){var o=dfromJdn(J);return DMN[o.m]+" "+o.d+", "+o.y;}
+function dcsp(str){var o=[],c="";for(var i=0;i<str.length;i++){var ch=str[i];if(ch===" "||ch==="\t"||ch===","){if(c){o.push(c);c="";}}else c+=ch;}if(c)o.push(c);return o;}
+function dparse(toks){var y=null,m=null,d=null;for(var i=0;i<toks.length;i++){var w=toks[i].toLowerCase();if(w.indexOf("-")>0){var p=w.split("-");if(p.length===3&&(+p[0])>31){y=+p[0];m=+p[1];d=+p[2];}continue;}if(DMON[w]!==undefined)m=DMON[w];else{var n=nHS(toks[i]);if(n!==null){if(n>31)y=n;else if(d===null)d=n;}}}if(m===null||d===null)return null;if(y===null)y=2026;return djdn(y,m,d);}
+function dateV(stmt){var L=stmt.toLowerCase();if(L.indexOf("day")<0)return null;var s="";for(var z=0;z<stmt.length;z++){var c=stmt[z];s+=(c==="=")?" = ":c;}var t=dcsp(s);var eq=t.indexOf("=");if(eq<2)return null;var N=null,di=-1;for(var i=0;i<eq;i++){if(t[i].toLowerCase().indexOf("day")===0&&i>0){N=nHS(t[i-1]);di=i;break;}}if(N===null)return null;var fi=-1;for(var i=0;i<eq;i++){var w=t[i].toLowerCase();if(w==="from"||w==="after"||w==="plus"||w==="before"){fi=i;break;}}var baseToks=fi>=0?t.slice(fi+1,eq):t.slice(di+1,eq);var before=(L.indexOf("before")>=0);var base=dparse(baseToks);var target=dparse(t.slice(eq+1));if(base===null||target===null)return null;var got=before?base-N:base+N;if(got===target)return {verdict:"VERIFIED",why:"(= "+djstr(got)+")"};return {verdict:"WRONG",why:"that date is "+djstr(got)+", not "+djstr(target)};}
 function classify(s){var L=s.toLowerCase();
  var pc=percent(s);
  if(pc){if(pc.verdict==="WRONG")return ["WRONG","lw","CML proved this wrong — "+pc.why];if(pc.verdict==="VERIFIED")return ["CORRECT","lp","CML checked the percentage "+pc.why];}
  var cv=convert(s);
  if(cv){if(cv.verdict==="WRONG")return ["WRONG","lw","CML proved this wrong — "+cv.why];if(cv.verdict==="VERIFIED")return ["CORRECT","lp","CML checked the conversion "+cv.why];}
+ var dv=dateV(s);
+ if(dv){if(dv.verdict==="WRONG")return ["WRONG","lw","CML proved this wrong — "+dv.why];if(dv.verdict==="VERIFIED")return ["CORRECT","lp","CML checked the date "+dv.why];}
  var hs=highStakes(s);
  if(hs){if(hs.verdict==='WRONG')return ['WRONG','lw','CML proved this wrong — '+hs.why];
   if(hs.verdict==='UNIT_ERROR')return ['WRONG','lw','⚠️ do not trust this — '+hs.why];
