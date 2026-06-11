@@ -87,7 +87,34 @@ function arithmetic(text){var sp='';for(var z=0;z<text.length;z++){var c=text[z]
  return {found:false};}
 function has(L,a){for(var i=0;i<a.length;i++)if(L.indexOf(a[i])>=0)return true;return false;}
 function qc(s){var n=0;for(var i=0;i<s.length;i++)if(s[i]==='"')n++;return n;}
-function classify(s){var L=s.toLowerCase();var a=arithmetic(s);
+function puU(u){u=(u||'').toLowerCase();if(!u||u==='$'||u==='usd'||u==='each'||u==='units'||u==='x'||u==='a'||u==='per'||u==='tablet'||u==='tablets'||u==='tab'||u==='tabs'||u==='pill'||u==='pills'||u==='dose'||u==='doses'||u==='times'||u==='count')return {};var o={},den=false,tok='';function fl(){if(tok){o[tok]=(o[tok]||0)+(den?-1:1);if(o[tok]===0)delete o[tok];tok='';}}for(var i=0;i<u.length;i++){var c=u[i];if(c==='/'){fl();den=true;}else if(c==='*'||c===' '){fl();}else tok+=c;}fl();return o;}
+function mU(a,b){var o={};for(var k in a)o[k]=a[k];for(var k in b){o[k]=(o[k]||0)+b[k];if(o[k]===0)delete o[k];}return o;}
+function dU(a,b){var o={};for(var k in a)o[k]=a[k];for(var k in b){o[k]=(o[k]||0)-b[k];if(o[k]===0)delete o[k];}return o;}
+function eU(a,b){var ks={};for(var k in a)ks[k]=1;for(var k in b)ks[k]=1;for(var k in ks)if((a[k]||0)!==(b[k]||0))return false;return true;}
+function sU(a){var n=[],d=[];for(var k in a){var p=a[k];if(p>0)n.push(k+(p>1?'^'+p:''));else d.push(k+(p<-1?'^'+(-p):''));}return (n.join('·')||'1')+(d.length?'/'+d.join('·'):'');}
+function nHS(s){var o='';for(var i=0;i<s.length;i++){var c=s[i];if((c>='0'&&c<='9')||c==='.'||c==='-')o+=c;else if(c===','||c==='$')continue;else break;}return (o===''||o==='-'||o==='.')?null:(isNaN(+o)?null:+o);}
+function highStakes(statement){var s='';for(var z=0;z<statement.length;z++){var ch=statement[z];s+=(ch==='='||ch==='×'||ch==='*'||ch==='÷'||ch==='+')?' '+ch+' ':ch;}
+ var t=s.split(/\s+/).filter(function(x){return x;});var eq=t.indexOf('=');if(eq<1)return null;
+ var cVal=nHS(t[eq+1]);if(cVal===null)return null;var cUnit=puU(t[eq+2]||(t[eq+1].indexOf('$')>=0?'$':''));
+ var k=eq-1;function rd(){var unit={};if(t[k]&&nHS(t[k])===null){unit=puU(t[k]);k--;}if(!t[k])return null;var v=nHS(t[k]);if(v===null)return null;k--;return {v:v,unit:unit};}
+ var o2=rd();if(!o2)return null;var op=t[k];if('×*x÷/+-'.indexOf(op)<0)return null;k--;var o1=rd();if(!o1)return null;
+ var val,ru;
+ if(op==='×'||op==='*'||op==='x'){val=o1.v*o2.v;ru=mU(o1.unit,o2.unit);}
+ else if(op==='÷'||op==='/'){val=o1.v/o2.v;ru=dU(o1.unit,o2.unit);}
+ else if(op==='+'){if(!eU(o1.unit,o2.unit))return {verdict:'UNIT_ERROR',why:'you cannot add '+sU(o1.unit)+' and '+sU(o2.unit)+' without converting first'};val=o1.v+o2.v;ru=o1.unit;}
+ else {if(!eU(o1.unit,o2.unit))return {verdict:'UNIT_ERROR',why:'you cannot subtract '+sU(o2.unit)+' from '+sU(o1.unit)};val=o1.v-o2.v;ru=o1.unit;}
+ var mathOk=Math.abs(val-cVal)<=Math.max(1e-9,Math.abs(val)*1e-9);
+ var hasU=false;for(var kk in ru){hasU=true;break;}var unitOk=hasU?eU(ru,cUnit):true;
+ var comp=(Math.round(val*1e6)/1e6)+(sU(ru)!=='1'?' '+sU(ru):'');
+ if(!mathOk)return {verdict:'WRONG',why:'it equals '+comp+', not '+cVal+(t[eq+2]?' '+t[eq+2]:'')};
+ if(!unitOk)return {verdict:'UNIT_ERROR',why:'the units do not work out — the left side gives '+sU(ru)+', but the answer claims '+sU(cUnit)};
+ return {verdict:'VERIFIED',why:'(= '+comp+')'};}
+function classify(s){var L=s.toLowerCase();
+ var hs=highStakes(s);
+ if(hs){if(hs.verdict==='WRONG')return ['WRONG','lw','CML proved this wrong — '+hs.why];
+  if(hs.verdict==='UNIT_ERROR')return ['WRONG','lw','⚠️ do not trust this — '+hs.why];
+  if(hs.verdict==='VERIFIED')return ['CORRECT','lp','CML verified the math AND the units '+hs.why];}
+ var a=arithmetic(s);
  if(a.found) return a.ok?['CORRECT','lp','CML recomputed this — it adds up (= '+a.got+')']:['WRONG','lw','CML proved this wrong — it should be '+a.got+', not '+a.claimed];
  if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qc(s)>=2) return ['CITES A SOURCE','ls','it names a source — open it to check'];
  if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','a forecast or estimate — not a settled fact'];
