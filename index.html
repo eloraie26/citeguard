@@ -67,6 +67,28 @@ function classify(s){var L=s.toLowerCase();var a=arithmetic(s);
 function splitC(text){var t=text,ab=['U.S.C.','U.S.','v.','Inc.','No.','et al.','Dr.','Mr.','Mrs.','St.','Fig.'];for(var i=0;i<ab.length;i++)t=t.split(ab[i]).join(ab[i].split('.').join('∯'));
  var o=[],c='';for(var j=0;j<t.length;j++){c+=t[j];var ch=t[j];if((ch==='.'||ch==='!'||ch==='?')&&(j+1>=t.length||t[j+1]<=' ')){o.push(c);c='';}}if(c)o.push(c);
  var out=[];for(var k=0;k<o.length;k++){var x=o[k].split('∯').join('.').replace(/^\s+|\s+$/g,'');if(x.length>1)out.push(x);}return out;}
+
+var WIKI="https://en.wikipedia.org/w/api.php?format=json&origin=*&action=";
+function wikiQuery(claim){var stop={The:1,This:1,That:1,While:1,Your:1,There:1,It:1,In:1,A:1,An:1,Under:1,Based:1,Our:1,His:1,Her:1};
+ var words=claim.replace(/[^A-Za-z0-9 ]/g," ").split(/\s+/).filter(Boolean);var caps=[],run=[];
+ for(var i=0;i<words.length;i++){var w=words[i];var isCap=w[0]>="A"&&w[0]<="Z"&&w.length>1&&!(i===0&&stop[w]);if(isCap&&!stop[w])run.push(w);else{if(run.length)caps.push(run.join(" "));run=[];}}
+ if(run.length)caps.push(run.join(" "));if(caps.length)return caps.sort(function(a,b){return b.length-a.length})[0];
+ return words.filter(function(w){return w.length>4}).slice(0,3).join(" ");}
+function keyTerms(claim){var nums=claim.match(/\d{2,}/g)||[];var caps=[],ws=claim.replace(/[^A-Za-z ]/g," ").split(/\s+/);
+ for(var i=0;i<ws.length;i++){var w=ws[i];if(w.length>3&&w[0]>="A"&&w[0]<="Z"&&i>0)caps.push(w);}return nums.concat(caps.slice(0,3));}
+async function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML="no clear topic to look up";return;}
+ try{var s=await fetch(WIKI+"opensearch&limit=1&search="+encodeURIComponent(q)).then(function(r){return r.json()});
+  var title=s[1][0],url=s[3][0];if(!title){el.innerHTML="📚 no Wikipedia article found for \""+q+"\" — still unverified";return;}
+  var e=await fetch(WIKI+"query&prop=extracts&exintro&explaintext&redirects=1&titles="+encodeURIComponent(title)).then(function(r){return r.json()});
+  var pages=e.query.pages,ext=(pages[Object.keys(pages)[0]].extract||"").toLowerCase();
+  var kt=keyTerms(claim),found=[],miss=[];for(var i=0;i<kt.length;i++){(ext.indexOf(kt[i].toLowerCase())>=0?found:miss).push(kt[i]);}
+  var link="<a href=\""+url+"\" target=\"_blank\" style=\"color:#0a6cff;text-decoration:underline\">Wikipedia: "+title+"</a>";
+  if(kt.length===0)el.innerHTML="📚 "+link+" — open it to verify your claim";
+  else if(miss.length===0)el.innerHTML="📚 "+link+" — all your key details appear ("+found.join(", ")+"). Consistent with the source; click to confirm.";
+  else if(found.length>0)el.innerHTML="📚 "+link+" — confirms <b>"+found.join(", ")+"</b> but does NOT mention <b style=\"color:var(--wrong)\">"+miss.join(", ")+"</b>. That part is unverified — check it.";
+  else el.innerHTML="📚 "+link+" — found the topic, but none of your specific details are in the summary. Read it.";
+ }catch(err){el.innerHTML="📚 live lookup unavailable — still unverified";}}
+
 function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/g,'');var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
  var claims=splitC(text),rows=[];for(var i=0;i<claims.length;i++)rows.push(classify(claims[i]));
  function cc(n){var k=0;for(var i=0;i<rows.length;i++)if(rows[i][0]===n)k++;return k;}
@@ -78,7 +100,7 @@ function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/
  else {hc='var(--pred)';head='⚠️ I can’t confirm this answer';cov='This is '+claims.length+' statement'+(claims.length>1?'s':'')+' with no math to check'+(sourced?' ('+sourced+' cite a source)':'')+'. Nothing looks obviously wrong, but I have NOT verified the facts — checking facts against live sources is the feature coming next.';}
  var h='<div class="head" style="color:'+hc+'">'+head+'</div><div class="cov">'+cov+'</div>';
  h+='<details open><summary>show each statement ▾</summary>';
- for(var j=0;j<claims.length;j++){var L=rows[j];h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why">'+L[3]+'</div></div></div>';}
- h+='</details>';out.innerHTML=h;}
+ for(var j=0;j<claims.length;j++){var L=rows[j];var wid=L[0]==='NEEDS A SOURCE'?' id="g'+j+'"':'';var wtxt=L[0]==='NEEDS A SOURCE'?'🔍 checking Wikipedia…':L[3];h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why"'+wid+'>'+wtxt+'</div></div></div>';}
+ h+='</details>';out.innerHTML=h;for(var g=0;g<claims.length;g++){if(rows[g][0]==='NEEDS A SOURCE'){var el=document.getElementById('g'+g);if(el)ground(claims[g],el);}}}
 function sample(){document.getElementById('inp').value='Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.';run();}
 </script></body></html>
