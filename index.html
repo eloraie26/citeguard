@@ -1,30 +1,32 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CiteGuard — see what's proven, sourced, or guessed in any AI answer</title>
-<meta name="description" content="Paste any AI answer. CiteGuard lights up what's proven, what's sourced, what's a prediction, and what the AI simply made up. Deterministic, in your browser, nothing uploaded."/>
+<title>CiteGuard — is your AI telling the truth?</title>
+<meta name="description" content="Paste any AI answer. CiteGuard shows in one glance what's correct, what's wrong, what's a prediction, and what it can't confirm. Deterministic, in your browser, nothing uploaded."/>
 <style>
  :root{--ink:#06070a;--mut:#8a8f98;--line:#ececf0;--proven:#0a8a2e;--wrong:#d61f1f;--sourced:#0a6cff;--pred:#c07a00;--unv:#9aa0a8;--bg:#fff}
- *{box-sizing:border-box;margin:0;padding:0}
- html,body{height:100%}
+ *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Helvetica,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45;display:flex;flex-direction:column;min-height:100%}
  .top{padding:26px 28px;font-weight:600;font-size:18px;letter-spacing:-.02em}
- main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0 24px}
- .hero{max-width:680px;text-align:center;margin-top:9vh}
+ main{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 24px}
+ .hero{max-width:680px;text-align:center;margin-top:8vh}
  h1{font-size:clamp(34px,6vw,60px);letter-spacing:-.045em;line-height:1.03;font-weight:700}
  .sub{font-size:clamp(16px,2.4vw,21px);color:var(--mut);margin-top:18px;letter-spacing:-.01em}
  .box{width:100%;max-width:680px;margin:34px auto 0}
- textarea{width:100%;min-height:128px;border:1px solid var(--line);border-radius:18px;padding:20px 22px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
+ textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:18px;padding:20px 22px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
  textarea:focus{border-color:#c9ccd2;box-shadow:0 1px 44px rgba(0,0,0,.08)}
  .actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:18px}
  button{appearance:none;border:0;background:var(--ink);color:#fff;font-size:16px;font-weight:600;padding:14px 30px;border-radius:980px;cursor:pointer;transition:.15s;font-family:inherit}
  button:hover{transform:translateY(-1px)}
  .samp{color:var(--mut);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
  #out{width:100%;max-width:680px;margin:30px auto 60px}
- .verdict{font-size:15px;font-weight:600;text-align:center;margin-bottom:16px;color:var(--mut)}
+ .head{font-size:23px;font-weight:700;letter-spacing:-.02em;text-align:center}
+ .cov{font-size:15px;color:var(--mut);text-align:center;margin:7px auto 20px;max-width:560px}
+ details{margin-top:6px}summary{cursor:pointer;color:var(--mut);font-size:14px;text-align:center;list-style:none}
+ summary::-webkit-details-marker{display:none}
  .claim{display:flex;gap:14px;align-items:flex-start;padding:15px 4px;border-top:1px solid var(--line)}
- .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:7px}
- .lab{font-size:11px;font-weight:700;letter-spacing:.06em;flex:none;width:92px;padding-top:3px}
+ .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:6px}
+ .lab{font-size:10px;font-weight:700;letter-spacing:.04em;flex:none;width:118px;padding-top:3px}
  .ctext{font-size:16px}.why{font-size:13px;color:var(--mut);margin-top:3px}
  footer{text-align:center;color:var(--mut);font-size:13px;padding:26px}
  .lp{color:var(--proven)}.lw{color:var(--wrong)}.ls{color:var(--sourced)}.lpr{color:var(--pred)}.lu{color:var(--unv)}
@@ -34,41 +36,49 @@
 <main>
  <div class="hero">
   <h1>Is your AI telling the truth?</h1>
-  <div class="sub">Paste any AI answer. We light up what's <b style="color:var(--proven)">proven</b>, what's <b style="color:var(--sourced)">sourced</b>, what's a <b style="color:var(--pred)">prediction</b> — and what it simply <b style="color:var(--wrong)">made up</b>.</div>
+  <div class="sub">Paste any AI answer. In one glance: what's <b style="color:var(--proven)">correct</b>, what's <b style="color:var(--wrong)">wrong</b>, what's a <b style="color:var(--pred)">guess</b>, and what it <b>can't confirm</b>.</div>
  </div>
  <div class="box">
-  <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini…"></textarea>
+  <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini, Google…"></textarea>
   <div class="actions"><button onclick="run()">Check it</button><span class="samp" onclick="sample()">try an example</span></div>
  </div>
  <div id="out"></div>
 </main>
 <footer>Deterministic · runs in your browser · nothing is uploaded · © 2026 CiteGuard</footer>
 <script>
-function num(t){var s='';for(const c of t){if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}return (s===''||s==='.'||s==='-')?null:(isNaN(+s)?null:+s);}
+function num(t){var s='';for(var x=0;x<t.length;x++){var c=t[x];if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}return (s===''||s==='.'||s==='-')?null:(isNaN(+s)?null:+s);}
 function isOp(t){return t==='×'||t==='x'||t==='*'||t==='÷'||t==='/'||t==='+'||t==='-';}
 function opf(o){return (o==='×'||o==='x'||o==='*')?'*':(o==='÷'||o==='/')?'/':o;}
-function unitOf(t){if(!t)return '';var s='';for(const c of t){if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))s+=c;else break;}return (s.length>0&&s.length<=5)?s.toLowerCase():'';}
+function unitOf(t){if(!t)return '';var s='';for(var x=0;x<t.length;x++){var c=t[x];if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))s+=c;else break;}return (s.length>0&&s.length<=5)?s.toLowerCase():'';}
 function evalSeq(n,o){n=n.slice();o=o.slice();for(var i=0;i<o.length;){if(o[i]==='*'||o[i]==='/'){var r=o[i]==='*'?n[i]*n[i+1]:n[i]/n[i+1];n.splice(i,2,r);o.splice(i,1);}else i++;}var a=n[0];for(var j=0;j<o.length;j++)a=o[j]==='+'?a+n[j+1]:a-n[j+1];return a;}
-function arithmetic(text){var sp='';for(const c of text)sp+=(c==='=')?' = ':c;var t=sp.split(/\s+/).filter(Boolean);
+function arithmetic(text){var sp='';for(var z=0;z<text.length;z++){var c=text[z];sp+=(c==='=')?' = ':c;}var t=sp.split(/\s+/);var u=[];for(var q=0;q<t.length;q++)if(t[q])u.push(t[q]);t=u;
  for(var i=0;i<t.length;i++){if(t[i]==='='){var r=num(t[i+1]);if(r===null)continue;var ru=unitOf(t[i+2]);var ns=[],os=[],us=[],k=i-1,en=true,pe='';
-  while(k>=0){if(en){var u=unitOf(t[k]);if(u&&pe===''){pe=u;k--;continue;}var v=num(t[k]);if(v===null)break;ns.unshift(v);us.unshift(pe);pe='';en=false;k--;}else{if(isOp(t[k])){os.unshift(opf(t[k]));en=true;k--;}else break;}}
-  if(ns.length>=2&&os.length===ns.length-1&&!en){var au=us.concat([ru]).filter(x=>x!=='');if([...new Set(au)].length>1)continue;var g=evalSeq(ns,os);return {found:true,ok:Math.abs(g-r)<=Math.max(1e-6,Math.abs(r)*1e-9),got:Math.round(g*100)/100,claimed:r};}}}
+  while(k>=0){if(en){var uu=unitOf(t[k]);if(uu&&pe===''){pe=uu;k--;continue;}var v=num(t[k]);if(v===null)break;ns.unshift(v);us.unshift(pe);pe='';en=false;k--;}else{if(isOp(t[k])){os.unshift(opf(t[k]));en=true;k--;}else break;}}
+  if(ns.length>=2&&os.length===ns.length-1&&!en){var au=[];for(var w=0;w<us.length;w++)if(us[w])au.push(us[w]);if(ru)au.push(ru);var dd={},cnt=0;for(var y=0;y<au.length;y++)if(!dd[au[y]]){dd[au[y]]=1;cnt++;}if(cnt>1)continue;var g=evalSeq(ns,os);return {found:true,ok:Math.abs(g-r)<=Math.max(1e-6,Math.abs(r)*1e-9),got:Math.round(g*100)/100,claimed:r};}}}
  return {found:false};}
-function has(L,arr){return arr.some(w=>L.includes(w));}
-function classify(s){var L=s.toLowerCase();
- var a=arithmetic(s); if(a.found) return a.ok?['PROVEN','lp','dp','recomputed exactly = '+a.got]:['MADE UP','lw','dw','recomputed '+a.got+' — the text claims '+a.claimed];
- var q=(s.match(/"/g)||[]).length;
- if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||q>=2) return ['SOURCED','ls','ds','traces to a source — verify it says this'];
- if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','dpr','an estimate — not an absolute fact'];
- return ['UNVERIFIED','lu','du','asserted with no proof or source — check it'];
+function has(L,arr){for(var i=0;i<arr.length;i++)if(L.indexOf(arr[i])>=0)return true;return false;}
+function qcount(s){var n=0;for(var i=0;i<s.length;i++)if(s[i]==='"')n++;return n;}
+function classify(s){var L=s.toLowerCase();var a=arithmetic(s);
+ if(a.found) return a.ok?['CORRECT','lp','dp','I recomputed this — it adds up (= '+a.got+')']:['WRONG','lw','dw','the math is wrong — it should be '+a.got+', not '+a.claimed];
+ if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qcount(s)>=2) return ['CITES A SOURCE','ls','ds','points to a source you can open and check'];
+ if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','dpr','a forecast or estimate — not a settled fact'];
+ return ['NEEDS A SOURCE','lu','du','I cannot confirm this on my own yet — it needs a source lookup'];
 }
-function split(text){var t=text;['U.S.C.','U.S.','v.','Inc.','No.','et al.','Dr.','Mr.','Mrs.','St.','Fig.'].forEach(a=>{t=t.split(a).join(a.replace(/\./g,'∯'));});
- return t.split(/(?<=[.?!])\s+/).map(x=>x.split('∯').join('.').trim()).filter(x=>x.length>1);}
-function run(){var text=document.getElementById('inp').value.trim();var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
- var rows=split(text).map(classify);var made=rows.filter(r=>r[0]==='MADE UP').length;
- var v=made>0?'<span style="color:var(--wrong)">⛔ '+made+' fabricated claim'+(made>1?'s':'')+' found — do not trust as-is</span>':'no fabrications caught — see each claim below';
- var h='<div class="verdict">'+v+'</div>';
- split(text).forEach((s,i)=>{var [lab,lc,dc,why]=rows[i];h+='<div class="claim"><span class="dot '+dc+'"></span><span class="lab '+lc+'">'+lab+'</span><div><div class="ctext">'+s+'</div><div class="why">'+why+'</div></div></div>';});
- out.innerHTML=h;}
-function sample(){document.getElementById('inp').value="Your refund is 3 × $400 = $1,200. Under 17 U.S.C. § 107 this qualifies as fair use. There is a 70% chance of rain tomorrow. The new policy will save $50,000 × 1.1 = $60,000 annually. Napoleon was born in 1769.";run();}
+function splitC(text){var t=text,ab=['U.S.C.','U.S.','v.','Inc.','No.','et al.','Dr.','Mr.','Mrs.','St.','Fig.'];for(var i=0;i<ab.length;i++)t=t.split(ab[i]).join(ab[i].split('.').join('∯'));
+ var o=[],c='';for(var j=0;j<t.length;j++){c+=t[j];var ch=t[j];if((ch==='.'||ch==='!'||ch==='?')&&(j+1>=t.length||t[j+1]<=' ')){o.push(c);c='';}}if(c)o.push(c);
+ var out=[];for(var k=0;k<o.length;k++){var x=o[k].split('∯').join('.').replace(/^\s+|\s+$/g,'');if(x.length>1)out.push(x);}return out;}
+function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/g,'');var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
+ var claims=splitC(text),rows=[];for(var i=0;i<claims.length;i++)rows.push(classify(claims[i]));
+ function cc(n){var k=0;for(var i=0;i<rows.length;i++)if(rows[i][0]===n)k++;return k;}
+ var wrong=cc('WRONG'),correct=cc('CORRECT'),needs=cc('NEEDS A SOURCE'),sourced=cc('CITES A SOURCE');
+ var head,hc,cov;
+ if(wrong>0){hc='var(--wrong)';head='⛔ Do not trust this as-is';cov=wrong+' statement'+(wrong>1?'s are':' is')+' factually WRONG — the math does not add up.';}
+ else if(correct>0&&needs===0){hc='var(--proven)';head='✅ The math checks out';cov='I recomputed '+correct+' calculation'+(correct>1?'s':'')+' — all correct.';}
+ else if(correct>0){hc='var(--proven)';head='✅ Math is correct — some facts need a source';cov='I verified '+correct+' calculation'+(correct>1?'s':'')+' (all correct). '+needs+' other statement'+(needs>1?'s':'')+' I cannot confirm without a source.';}
+ else {hc='var(--pred)';head='⚠️ I can’t confirm this answer';cov='This is '+claims.length+' statement'+(claims.length>1?'s':'')+' with no math to check'+(sourced?' ('+sourced+' cite a source)':'')+'. Nothing looks obviously wrong, but I have NOT verified the facts — checking facts against live sources is the feature coming next.';}
+ var h='<div class="head" style="color:'+hc+'">'+head+'</div><div class="cov">'+cov+'</div>';
+ h+='<details open><summary>show each statement ▾</summary>';
+ for(var j=0;j<claims.length;j++){var L=rows[j];h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why">'+L[3]+'</div></div></div>';}
+ h+='</details>';out.innerHTML=h;}
+function sample(){document.getElementById('inp').value='Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.';run();}
 </script></body></html>
