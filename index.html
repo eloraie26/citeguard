@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/><meta http-equiv="Pragma" content="no-cache"/>
 <title>CiteGuard — is your AI telling the truth?</title>
 <style>
  :root{--ink:#06070a;--mut:#8a8f98;--line:#ececf0;--proven:#0a8a2e;--wrong:#d61f1f;--sourced:#0a6cff;--pred:#c07a00;--unv:#9aa0a8;--bg:#fff}
@@ -13,15 +12,16 @@
  .hero{max-width:680px;text-align:center;margin-top:6vh}
  h1{font-size:clamp(32px,5.6vw,56px);letter-spacing:-.045em;line-height:1.04;font-weight:700}
  .sub{font-size:clamp(15px,2.3vw,20px);color:var(--mut);margin-top:16px;letter-spacing:-.01em}
- .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin:24px auto 0}
+ .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:660px;margin:24px auto 0}
  .chip{font-size:13.5px;font-weight:500;padding:8px 16px;border:1px solid var(--line);border-radius:980px;cursor:pointer;color:#3a3d44;transition:.12s;background:#fff;user-select:none}
  .chip:hover{border-color:#c9ccd2}.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
  .box{width:100%;max-width:680px;margin:22px auto 0}
  textarea{width:100%;min-height:118px;border:1px solid var(--line);border-radius:18px;padding:19px 21px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
  textarea:focus{border-color:#c9ccd2;box-shadow:0 1px 44px rgba(0,0,0,.08)}
- .actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:16px}
+ .actions{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px;flex-wrap:wrap}
  button{border:0;background:var(--ink);color:#fff;font-size:16px;font-weight:600;padding:13px 30px;border-radius:980px;cursor:pointer;transition:.15s;font-family:inherit}
  button:hover{transform:translateY(-1px)}
+ button.ghost{background:#f2f2f4;color:var(--ink)}
  .samp{color:var(--mut);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
  #out{width:100%;max-width:680px;margin:28px auto 56px}
  .head{font-size:22px;font-weight:700;letter-spacing:-.02em;text-align:center}
@@ -39,30 +39,31 @@
 <main>
  <div class="hero">
   <h1>Is your AI telling the truth?</h1>
-  <div class="sub">Paste any AI answer. See what's <b style="color:var(--proven)">correct</b>, what's <b style="color:var(--wrong)">wrong</b>, what's a <b style="color:var(--pred)">guess</b>, and what it <b>can't confirm</b>.</div>
+  <div class="sub">CiteGuard <b>proves</b> what it can — the math — and flags the rest honestly. Sources are for <b>you</b> to check, never treated as gospel.</div>
   <div class="chips" id="chips"></div>
  </div>
  <div class="box">
   <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini, Google…"></textarea>
-  <div class="actions"><button onclick="run()">Check it</button><span class="samp" onclick="sample()">try an example</span></div>
+  <div class="actions"><button onclick="run()">Check it</button><button class="ghost" onclick="clearAll()">Clear</button><span class="samp" onclick="sample()">try an example</span></div>
  </div>
  <div id="out"></div>
 </main>
-<footer>Deterministic math · live Wikipedia grounding · nothing uploaded · © 2026 CiteGuard</footer>
+<footer>CML proves the math · sources are yours to verify · nothing uploaded · © 2026 CiteGuard</footer>
 <script>
 var SUBJECTS=[
- ['Auto','','Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.'],
- ['Math & Money','arithmetic, finance, accounting, statistics','Revenue grew 15%, so $200,000 × 1.15 = $232,000. Each of 60 units costs $45, total 60 × 45 = $2,800. The loan interest is $10,000 × 0.05 = $500.'],
- ['Science','physics, chemistry, biology, astronomy','A 2 kg object moving 10 m/s has kinetic energy 0.5 × 2 × 100 = 120 J. Water boils at 100°C at sea level. Light travels at about 300,000 km/s.'],
- ['Health','medicine, nursing, anatomy, nutrition','The dose is 2 tablets × 250 mg = 600 mg. Acetaminophen is safe up to 4000 mg per day. Normal resting heart rate is 60 to 100 bpm.'],
- ['Law','US law, contracts, legal citations','Under 17 U.S.C. § 107 this is fair use. Statutory damages were 3 × $150,000 = $450,000. The case was decided in 1879.'],
- ['History & Facts','history, geography, general knowledge','Napoleon was born in 1769. The Eiffel Tower is located in Paris. The Great Wall of China is over 13,000 miles long.'],
- ['Business','economics, management, marketing, taxes','A company with $80,000 income owes $80,000 × 0.22 = $17,600 in tax. Gross margin was $50 − $30 = $20 per unit.'],
+ ['CiteGuard','CML deterministic check — proves math, flags the rest','Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.'],
+ ['Math & Money','arithmetic, finance, accounting','Revenue grew 15%, so $200,000 × 1.15 = $232,000. Each of 60 units costs $45, total 60 × 45 = $2,800. The loan interest is $10,000 × 0.05 = $500.'],
+ ['Science','physics, chemistry, biology','A 2 kg object moving 10 m/s has kinetic energy 0.5 × 2 × 100 = 120 J. Water boils at 100°C at sea level. Light travels at about 300,000 km/s.'],
+ ['Health','medicine, nursing, nutrition','The dose is 2 tablets × 250 mg = 600 mg. Acetaminophen is safe up to 4000 mg per day. Normal resting heart rate is 60 to 100 bpm.'],
+ ['Law','US law, contracts, citations','Under 17 U.S.C. § 107 this is fair use. Statutory damages were 3 × $150,000 = $450,000. The case was decided in 1879.'],
+ ['History & Facts','history, geography, general','Napoleon was born in 1769. The Eiffel Tower is located in Paris. The Great Wall of China is over 13,000 miles long.'],
+ ['Business','economics, taxes, marketing','A company with $80,000 income owes $80,000 × 0.22 = $17,600 in tax. Gross margin was $50 − $30 = $20 per unit.'],
 ];
 var SUBJ=0;
 function chips(){var c=document.getElementById('chips');var h='';for(var i=0;i<SUBJECTS.length;i++)h+='<span class="chip'+(i===SUBJ?' on':'')+'" onclick="pick('+i+')">'+SUBJECTS[i][0]+'</span>';c.innerHTML=h;}
-function pick(i){SUBJ=i;chips();var d=SUBJECTS[i][1];document.getElementById('inp').placeholder=d?('Paste an AI answer about '+SUBJECTS[i][0].toLowerCase()+' — '+d+'…'):'Paste an answer from ChatGPT, Claude, Gemini, Google…';}
+function pick(i){SUBJ=i;chips();var d=SUBJECTS[i][1];document.getElementById('inp').placeholder='Paste an AI answer'+(i>0?' about '+SUBJECTS[i][0].toLowerCase():'')+'…';}
 chips();
+function clearAll(){document.getElementById('inp').value='';document.getElementById('out').innerHTML='';document.getElementById('inp').focus();}
 function num(t){var s='';for(var x=0;x<t.length;x++){var c=t[x];if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}return (s===''||s==='.'||s==='-')?null:(isNaN(+s)?null:+s);}
 function isOp(t){return t==='×'||t==='x'||t==='*'||t==='÷'||t==='/'||t==='+'||t==='-';}
 function opf(o){return (o==='×'||o==='x'||o==='*')?'*':(o==='÷'||o==='/')?'/':o;}
@@ -76,8 +77,8 @@ function arithmetic(text){var sp='';for(var z=0;z<text.length;z++){var c=text[z]
 function has(L,a){for(var i=0;i<a.length;i++)if(L.indexOf(a[i])>=0)return true;return false;}
 function qc(s){var n=0;for(var i=0;i<s.length;i++)if(s[i]==='"')n++;return n;}
 function classify(s){var L=s.toLowerCase();var a=arithmetic(s);
- if(a.found) return a.ok?['CORRECT','lp','dp','I recomputed this — it adds up (= '+a.got+')']:['WRONG','lw','dw','the math is wrong — it should be '+a.got+', not '+a.claimed];
- if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qc(s)>=2) return ['CITES A SOURCE','ls','ds','points to a source you can open and check'];
+ if(a.found) return a.ok?['CORRECT','lp','dp','CML recomputed this — it adds up (= '+a.got+')']:['WRONG','lw','dw','CML proved this wrong — it should be '+a.got+', not '+a.claimed];
+ if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qc(s)>=2) return ['CITES A SOURCE','ls','ds','it names a source — open it to check'];
  if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','dpr','a forecast or estimate — not a settled fact'];
  return ['NEEDS A SOURCE','lu','du','checking…'];
 }
@@ -92,31 +93,32 @@ function wikiQuery(claim){var stop={The:1,This:1,That:1,While:1,Your:1,There:1,I
  return words.filter(function(w){return w.length>4}).slice(0,3).join(' ');}
 function keyTerms(claim){var nums=claim.match(/\d{2,}/g)||[];var caps=[],ws=claim.replace(/[^A-Za-z ]/g,' ').split(/\s+/);
  for(var i=0;i<ws.length;i++){var w=ws[i];if(w.length>3&&w[0]>='A'&&w[0]<='Z'&&i>0)caps.push(w);}return nums.concat(caps.slice(0,3));}
-function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML='no clear topic to look up';return;}
+function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML='CML can’t prove this — find a source you trust to check it.';return;}
  fetch(WIKI+'opensearch&limit=1&search='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(s){
-  var title=s[1][0],url=s[3][0];if(!title){el.innerHTML='📚 no Wikipedia article found for "'+q+'" — still unverified';return;}
+  var title=s[1][0],url=s[3][0];if(!title){el.innerHTML='CML can’t prove this — no quick source found. Verify it yourself.';return;}
   return fetch(WIKI+'query&prop=extracts&exintro&explaintext&redirects=1&titles='+encodeURIComponent(title)).then(function(r){return r.json();}).then(function(e){
    var pages=e.query.pages,ext=(pages[Object.keys(pages)[0]].extract||'').toLowerCase();
    var kt=keyTerms(claim),found=[],miss=[];for(var i=0;i<kt.length;i++){(ext.indexOf(kt[i].toLowerCase())>=0?found:miss).push(kt[i]);}
-   var link='<a href="'+url+'" target="_blank" style="color:#0a6cff;text-decoration:underline">Wikipedia: '+title+'</a>';
-   if(kt.length===0)el.innerHTML='📚 '+link+' — open it to verify your claim';
-   else if(miss.length===0)el.innerHTML='📚 '+link+' — all your key details appear ('+found.join(', ')+'). Consistent with the source; click to confirm.';
-   else if(found.length>0)el.innerHTML='📚 '+link+' — confirms <b>'+found.join(', ')+'</b> but does NOT mention <b style="color:var(--wrong)">'+miss.join(', ')+'</b>. That part is unverified — check it.';
-   else el.innerHTML='📚 '+link+' — found the topic, but your specific details are not in the summary. Read it.';
+   var link='<a href="'+url+'" target="_blank" style="color:#0a6cff;text-decoration:underline">'+title+' (Wikipedia)</a>';
+   var pre='CML can’t prove facts — here’s a source for <b>you</b> to check (not our verdict): ';
+   if(kt.length===0)el.innerHTML=pre+link;
+   else if(miss.length===0)el.innerHTML=pre+link+' — it mentions all your key details ('+found.join(', ')+'). You decide.';
+   else if(found.length>0)el.innerHTML=pre+link+' — it mentions '+found.join(', ')+' but NOT <b style="color:var(--wrong)">'+miss.join(', ')+'</b>. Check that part.';
+   else el.innerHTML=pre+link+' — the topic, but not your specific claim. Read it yourself.';
   });
- }).catch(function(){el.innerHTML='📚 live lookup unavailable — still unverified';});}
+ }).catch(function(){el.innerHTML='CML can’t prove this — live source lookup unavailable. Verify it yourself.';});}
 function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/g,'');var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
  var claims=splitC(text),rows=[];for(var i=0;i<claims.length;i++)rows.push(classify(claims[i]));
  function cc(n){var k=0;for(var i=0;i<rows.length;i++)if(rows[i][0]===n)k++;return k;}
  var wrong=cc('WRONG'),correct=cc('CORRECT'),needs=cc('NEEDS A SOURCE');
  var head,hc,cov;
- if(wrong>0){hc='var(--wrong)';head='⛔ Do not trust this as-is';cov=wrong+' statement'+(wrong>1?'s are':' is')+' factually WRONG — the math does not add up.';}
- else if(correct>0&&needs===0){hc='var(--proven)';head='✅ The math checks out';cov='I recomputed '+correct+' calculation'+(correct>1?'s':'')+' — all correct.';}
- else if(correct>0){hc='var(--proven)';head='✅ Math is correct — facts checked against sources below';cov='I verified '+correct+' calculation'+(correct>1?'s':'')+' (all correct). Grounding the other statements against Wikipedia…';}
- else {hc='var(--pred)';head='Checking each statement';cov='No math here — grounding the factual statements against Wikipedia live…';}
- var sj=SUBJ>0?' · subject: '+SUBJECTS[SUBJ][0]:'';
+ if(wrong>0){hc='var(--wrong)';head='⛔ Do not trust this as-is';cov='CML proved '+wrong+' statement'+(wrong>1?'s':'')+' factually WRONG — the math does not add up.';}
+ else if(correct>0&&needs===0){hc='var(--proven)';head='✅ CML proved the math correct';cov='I recomputed '+correct+' calculation'+(correct>1?'s':'')+' — all correct.';}
+ else if(correct>0){hc='var(--proven)';head='✅ Math proven correct — facts are yours to verify';cov='CML proved '+correct+' calculation'+(correct>1?'s':'')+' (all correct). It can’t prove the other statements — see sources to check below.';}
+ else {hc='var(--unv)';head='CML can’t prove these — here’s where to verify';cov='No math to prove here. CML doesn’t assert facts — it points you to sources you can open and judge.';}
+ var sj=SUBJ>0?' · '+SUBJECTS[SUBJ][0]:'';
  var h='<div class="head" style="color:'+hc+'">'+head+'</div><div class="cov">'+cov+sj+'</div><details open><summary>show each statement ▾</summary>';
- for(var j=0;j<claims.length;j++){var L=rows[j];var wid=L[0]==='NEEDS A SOURCE'?' id="g'+j+'"':'';h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why"'+wid+'>'+(L[0]==='NEEDS A SOURCE'?'🔍 checking Wikipedia…':L[3])+'</div></div></div>';}
+ for(var j=0;j<claims.length;j++){var L=rows[j];var wid=L[0]==='NEEDS A SOURCE'?' id="g'+j+'"':'';h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why"'+wid+'>'+(L[0]==='NEEDS A SOURCE'?'CML can’t prove this — finding a source for you to check…':L[3])+'</div></div></div>';}
  h+='</details>';out.innerHTML=h;
  for(var g=0;g<claims.length;g++){if(rows[g][0]==='NEEDS A SOURCE'){var el=document.getElementById('g'+g);if(el)ground(claims[g],el);}}}
 function sample(){document.getElementById('inp').value=SUBJECTS[SUBJ][2];run();}
