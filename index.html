@@ -2,33 +2,34 @@
 <html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>CiteGuard — is your AI telling the truth?</title>
-<meta name="description" content="Paste any AI answer. CiteGuard shows in one glance what's correct, what's wrong, what's a prediction, and what it can't confirm. Deterministic, in your browser, nothing uploaded."/>
 <style>
  :root{--ink:#06070a;--mut:#8a8f98;--line:#ececf0;--proven:#0a8a2e;--wrong:#d61f1f;--sourced:#0a6cff;--pred:#c07a00;--unv:#9aa0a8;--bg:#fff}
  *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
- body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Helvetica,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45;display:flex;flex-direction:column;min-height:100%}
- .top{padding:26px 28px;font-weight:600;font-size:18px;letter-spacing:-.02em}
- main{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 24px}
- .hero{max-width:680px;text-align:center;margin-top:8vh}
- h1{font-size:clamp(34px,6vw,60px);letter-spacing:-.045em;line-height:1.03;font-weight:700}
- .sub{font-size:clamp(16px,2.4vw,21px);color:var(--mut);margin-top:18px;letter-spacing:-.01em}
- .box{width:100%;max-width:680px;margin:34px auto 0}
- textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:18px;padding:20px 22px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
+ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.45;display:flex;flex-direction:column;min-height:100%}
+ .top{padding:24px 28px;font-weight:600;font-size:18px;letter-spacing:-.02em}
+ main{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 22px}
+ .hero{max-width:680px;text-align:center;margin-top:6vh}
+ h1{font-size:clamp(32px,5.6vw,56px);letter-spacing:-.045em;line-height:1.04;font-weight:700}
+ .sub{font-size:clamp(15px,2.3vw,20px);color:var(--mut);margin-top:16px;letter-spacing:-.01em}
+ .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin:24px auto 0}
+ .chip{font-size:13.5px;font-weight:500;padding:8px 16px;border:1px solid var(--line);border-radius:980px;cursor:pointer;color:#3a3d44;transition:.12s;background:#fff;user-select:none}
+ .chip:hover{border-color:#c9ccd2}.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+ .box{width:100%;max-width:680px;margin:22px auto 0}
+ textarea{width:100%;min-height:118px;border:1px solid var(--line);border-radius:18px;padding:19px 21px;font-size:17px;font-family:inherit;resize:vertical;outline:none;box-shadow:0 1px 30px rgba(0,0,0,.04);transition:.15s}
  textarea:focus{border-color:#c9ccd2;box-shadow:0 1px 44px rgba(0,0,0,.08)}
- .actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:18px}
- button{appearance:none;border:0;background:var(--ink);color:#fff;font-size:16px;font-weight:600;padding:14px 30px;border-radius:980px;cursor:pointer;transition:.15s;font-family:inherit}
+ .actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:16px}
+ button{border:0;background:var(--ink);color:#fff;font-size:16px;font-weight:600;padding:13px 30px;border-radius:980px;cursor:pointer;transition:.15s;font-family:inherit}
  button:hover{transform:translateY(-1px)}
  .samp{color:var(--mut);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
- #out{width:100%;max-width:680px;margin:30px auto 60px}
- .head{font-size:23px;font-weight:700;letter-spacing:-.02em;text-align:center}
- .cov{font-size:15px;color:var(--mut);text-align:center;margin:7px auto 20px;max-width:560px}
- details{margin-top:6px}summary{cursor:pointer;color:var(--mut);font-size:14px;text-align:center;list-style:none}
- summary::-webkit-details-marker{display:none}
+ #out{width:100%;max-width:680px;margin:28px auto 56px}
+ .head{font-size:22px;font-weight:700;letter-spacing:-.02em;text-align:center}
+ .cov{font-size:15px;color:var(--mut);text-align:center;margin:7px auto 18px;max-width:560px}
+ details{margin-top:6px}summary{cursor:pointer;color:var(--mut);font-size:14px;text-align:center;list-style:none}summary::-webkit-details-marker{display:none}
  .claim{display:flex;gap:14px;align-items:flex-start;padding:15px 4px;border-top:1px solid var(--line)}
  .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:6px}
  .lab{font-size:10px;font-weight:700;letter-spacing:.04em;flex:none;width:118px;padding-top:3px}
  .ctext{font-size:16px}.why{font-size:13px;color:var(--mut);margin-top:3px}
- footer{text-align:center;color:var(--mut);font-size:13px;padding:26px}
+ footer{text-align:center;color:var(--mut);font-size:13px;padding:24px}
  .lp{color:var(--proven)}.lw{color:var(--wrong)}.ls{color:var(--sourced)}.lpr{color:var(--pred)}.lu{color:var(--unv)}
  .dp{background:var(--proven)}.dw{background:var(--wrong)}.ds{background:var(--sourced)}.dpr{background:var(--pred)}.du{background:var(--unv)}
 </style></head><body>
@@ -36,7 +37,8 @@
 <main>
  <div class="hero">
   <h1>Is your AI telling the truth?</h1>
-  <div class="sub">Paste any AI answer. In one glance: what's <b style="color:var(--proven)">correct</b>, what's <b style="color:var(--wrong)">wrong</b>, what's a <b style="color:var(--pred)">guess</b>, and what it <b>can't confirm</b>.</div>
+  <div class="sub">Paste any AI answer. See what's <b style="color:var(--proven)">correct</b>, what's <b style="color:var(--wrong)">wrong</b>, what's a <b style="color:var(--pred)">guess</b>, and what it <b>can't confirm</b>.</div>
+  <div class="chips" id="chips"></div>
  </div>
  <div class="box">
   <textarea id="inp" placeholder="Paste an answer from ChatGPT, Claude, Gemini, Google…"></textarea>
@@ -44,63 +46,76 @@
  </div>
  <div id="out"></div>
 </main>
-<footer>Deterministic · runs in your browser · nothing is uploaded · © 2026 CiteGuard</footer>
+<footer>Deterministic math · live Wikipedia grounding · nothing uploaded · © 2026 CiteGuard</footer>
 <script>
+var SUBJECTS=[
+ ['Auto','','Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.'],
+ ['Math & Money','arithmetic, finance, accounting, statistics','Revenue grew 15%, so $200,000 × 1.15 = $232,000. Each of 60 units costs $45, total 60 × 45 = $2,800. The loan interest is $10,000 × 0.05 = $500.'],
+ ['Science','physics, chemistry, biology, astronomy','A 2 kg object moving 10 m/s has kinetic energy 0.5 × 2 × 100 = 120 J. Water boils at 100°C at sea level. Light travels at about 300,000 km/s.'],
+ ['Health','medicine, nursing, anatomy, nutrition','The dose is 2 tablets × 250 mg = 600 mg. Acetaminophen is safe up to 4000 mg per day. Normal resting heart rate is 60 to 100 bpm.'],
+ ['Law','US law, contracts, legal citations','Under 17 U.S.C. § 107 this is fair use. Statutory damages were 3 × $150,000 = $450,000. The case was decided in 1879.'],
+ ['History & Facts','history, geography, general knowledge','Napoleon was born in 1769. The Eiffel Tower is located in Paris. The Great Wall of China is over 13,000 miles long.'],
+ ['Business','economics, management, marketing, taxes','A company with $80,000 income owes $80,000 × 0.22 = $17,600 in tax. Gross margin was $50 − $30 = $20 per unit.'],
+];
+var SUBJ=0;
+function chips(){var c=document.getElementById('chips');var h='';for(var i=0;i<SUBJECTS.length;i++)h+='<span class="chip'+(i===SUBJ?' on':'')+'" onclick="pick('+i+')">'+SUBJECTS[i][0]+'</span>';c.innerHTML=h;}
+function pick(i){SUBJ=i;chips();var d=SUBJECTS[i][1];document.getElementById('inp').placeholder=d?('Paste an AI answer about '+SUBJECTS[i][0].toLowerCase()+' — '+d+'…'):'Paste an answer from ChatGPT, Claude, Gemini, Google…';}
+chips();
 function num(t){var s='';for(var x=0;x<t.length;x++){var c=t[x];if((c>='0'&&c<='9')||c==='.'||c==='-')s+=c;}return (s===''||s==='.'||s==='-')?null:(isNaN(+s)?null:+s);}
 function isOp(t){return t==='×'||t==='x'||t==='*'||t==='÷'||t==='/'||t==='+'||t==='-';}
 function opf(o){return (o==='×'||o==='x'||o==='*')?'*':(o==='÷'||o==='/')?'/':o;}
 function unitOf(t){if(!t)return '';var s='';for(var x=0;x<t.length;x++){var c=t[x];if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))s+=c;else break;}return (s.length>0&&s.length<=5)?s.toLowerCase():'';}
 function evalSeq(n,o){n=n.slice();o=o.slice();for(var i=0;i<o.length;){if(o[i]==='*'||o[i]==='/'){var r=o[i]==='*'?n[i]*n[i+1]:n[i]/n[i+1];n.splice(i,2,r);o.splice(i,1);}else i++;}var a=n[0];for(var j=0;j<o.length;j++)a=o[j]==='+'?a+n[j+1]:a-n[j+1];return a;}
-function arithmetic(text){var sp='';for(var z=0;z<text.length;z++){var c=text[z];sp+=(c==='=')?' = ':c;}var t=sp.split(/\s+/);var u=[];for(var q=0;q<t.length;q++)if(t[q])u.push(t[q]);t=u;
+function arithmetic(text){var sp='';for(var z=0;z<text.length;z++){var c=text[z];sp+=(c==='=')?' = ':c;}var t=sp.split(/\s+/).filter(function(x){return x;});
  for(var i=0;i<t.length;i++){if(t[i]==='='){var r=num(t[i+1]);if(r===null)continue;var ru=unitOf(t[i+2]);var ns=[],os=[],us=[],k=i-1,en=true,pe='';
   while(k>=0){if(en){var uu=unitOf(t[k]);if(uu&&pe===''){pe=uu;k--;continue;}var v=num(t[k]);if(v===null)break;ns.unshift(v);us.unshift(pe);pe='';en=false;k--;}else{if(isOp(t[k])){os.unshift(opf(t[k]));en=true;k--;}else break;}}
-  if(ns.length>=2&&os.length===ns.length-1&&!en){var au=[];for(var w=0;w<us.length;w++)if(us[w])au.push(us[w]);if(ru)au.push(ru);var dd={},cnt=0;for(var y=0;y<au.length;y++)if(!dd[au[y]]){dd[au[y]]=1;cnt++;}if(cnt>1)continue;var g=evalSeq(ns,os);return {found:true,ok:Math.abs(g-r)<=Math.max(1e-6,Math.abs(r)*1e-9),got:Math.round(g*100)/100,claimed:r};}}}
+  if(ns.length>=2&&os.length===ns.length-1&&!en){var au=[];for(var w=0;w<us.length;w++)if(us[w])au.push(us[w]);if(ru)au.push(ru);var dd={},cn=0;for(var y=0;y<au.length;y++)if(!dd[au[y]]){dd[au[y]]=1;cn++;}if(cn>1)continue;var g=evalSeq(ns,os);return {found:true,ok:Math.abs(g-r)<=Math.max(1e-6,Math.abs(r)*1e-9),got:Math.round(g*100)/100,claimed:r};}}}
  return {found:false};}
-function has(L,arr){for(var i=0;i<arr.length;i++)if(L.indexOf(arr[i])>=0)return true;return false;}
-function qcount(s){var n=0;for(var i=0;i<s.length;i++)if(s[i]==='"')n++;return n;}
+function has(L,a){for(var i=0;i<a.length;i++)if(L.indexOf(a[i])>=0)return true;return false;}
+function qc(s){var n=0;for(var i=0;i<s.length;i++)if(s[i]==='"')n++;return n;}
 function classify(s){var L=s.toLowerCase();var a=arithmetic(s);
  if(a.found) return a.ok?['CORRECT','lp','dp','I recomputed this — it adds up (= '+a.got+')']:['WRONG','lw','dw','the math is wrong — it should be '+a.got+', not '+a.claimed];
- if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qcount(s)>=2) return ['CITES A SOURCE','ls','ds','points to a source you can open and check'];
+ if(has(L,['u.s.c','§',' v. ','et al','according to','per the','(20','(19','reported by','cited in','source:'])||qc(s)>=2) return ['CITES A SOURCE','ls','ds','points to a source you can open and check'];
  if(has(L,['will ','likely','expected','projected','forecast','estimate','predict','should ','may ','could ','probably','%','chance','risk of','approximately'])) return ['PREDICTION','lpr','dpr','a forecast or estimate — not a settled fact'];
- return ['NEEDS A SOURCE','lu','du','I cannot confirm this on my own yet — it needs a source lookup'];
+ return ['NEEDS A SOURCE','lu','du','checking…'];
 }
 function splitC(text){var t=text,ab=['U.S.C.','U.S.','v.','Inc.','No.','et al.','Dr.','Mr.','Mrs.','St.','Fig.'];for(var i=0;i<ab.length;i++)t=t.split(ab[i]).join(ab[i].split('.').join('∯'));
  var o=[],c='';for(var j=0;j<t.length;j++){c+=t[j];var ch=t[j];if((ch==='.'||ch==='!'||ch==='?')&&(j+1>=t.length||t[j+1]<=' ')){o.push(c);c='';}}if(c)o.push(c);
  var out=[];for(var k=0;k<o.length;k++){var x=o[k].split('∯').join('.').replace(/^\s+|\s+$/g,'');if(x.length>1)out.push(x);}return out;}
-
 var WIKI="https://en.wikipedia.org/w/api.php?format=json&origin=*&action=";
-function wikiQuery(claim){var stop={The:1,This:1,That:1,While:1,Your:1,There:1,It:1,In:1,A:1,An:1,Under:1,Based:1,Our:1,His:1,Her:1};
- var words=claim.replace(/[^A-Za-z0-9 ]/g," ").split(/\s+/).filter(Boolean);var caps=[],run=[];
- for(var i=0;i<words.length;i++){var w=words[i];var isCap=w[0]>="A"&&w[0]<="Z"&&w.length>1&&!(i===0&&stop[w]);if(isCap&&!stop[w])run.push(w);else{if(run.length)caps.push(run.join(" "));run=[];}}
- if(run.length)caps.push(run.join(" "));if(caps.length)return caps.sort(function(a,b){return b.length-a.length})[0];
- return words.filter(function(w){return w.length>4}).slice(0,3).join(" ");}
-function keyTerms(claim){var nums=claim.match(/\d{2,}/g)||[];var caps=[],ws=claim.replace(/[^A-Za-z ]/g," ").split(/\s+/);
- for(var i=0;i<ws.length;i++){var w=ws[i];if(w.length>3&&w[0]>="A"&&w[0]<="Z"&&i>0)caps.push(w);}return nums.concat(caps.slice(0,3));}
-async function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML="no clear topic to look up";return;}
- try{var s=await fetch(WIKI+"opensearch&limit=1&search="+encodeURIComponent(q)).then(function(r){return r.json()});
-  var title=s[1][0],url=s[3][0];if(!title){el.innerHTML="📚 no Wikipedia article found for \""+q+"\" — still unverified";return;}
-  var e=await fetch(WIKI+"query&prop=extracts&exintro&explaintext&redirects=1&titles="+encodeURIComponent(title)).then(function(r){return r.json()});
-  var pages=e.query.pages,ext=(pages[Object.keys(pages)[0]].extract||"").toLowerCase();
-  var kt=keyTerms(claim),found=[],miss=[];for(var i=0;i<kt.length;i++){(ext.indexOf(kt[i].toLowerCase())>=0?found:miss).push(kt[i]);}
-  var link="<a href=\""+url+"\" target=\"_blank\" style=\"color:#0a6cff;text-decoration:underline\">Wikipedia: "+title+"</a>";
-  if(kt.length===0)el.innerHTML="📚 "+link+" — open it to verify your claim";
-  else if(miss.length===0)el.innerHTML="📚 "+link+" — all your key details appear ("+found.join(", ")+"). Consistent with the source; click to confirm.";
-  else if(found.length>0)el.innerHTML="📚 "+link+" — confirms <b>"+found.join(", ")+"</b> but does NOT mention <b style=\"color:var(--wrong)\">"+miss.join(", ")+"</b>. That part is unverified — check it.";
-  else el.innerHTML="📚 "+link+" — found the topic, but none of your specific details are in the summary. Read it.";
- }catch(err){el.innerHTML="📚 live lookup unavailable — still unverified";}}
-
+function wikiQuery(claim){var stop={The:1,This:1,That:1,While:1,Your:1,There:1,It:1,In:1,A:1,An:1,Under:1,Based:1,Our:1,His:1,Her:1,Each:1,Normal:1};
+ var words=claim.replace(/[^A-Za-z0-9 ]/g,' ').split(/\s+/).filter(function(x){return x;});var caps=[],run=[];
+ for(var i=0;i<words.length;i++){var w=words[i];var ic=w[0]>='A'&&w[0]<='Z'&&w.length>1&&!(i===0&&stop[w]);if(ic&&!stop[w])run.push(w);else{if(run.length)caps.push(run.join(' '));run=[];}}
+ if(run.length)caps.push(run.join(' '));if(caps.length)return caps.sort(function(a,b){return b.length-a.length})[0];
+ return words.filter(function(w){return w.length>4}).slice(0,3).join(' ');}
+function keyTerms(claim){var nums=claim.match(/\d{2,}/g)||[];var caps=[],ws=claim.replace(/[^A-Za-z ]/g,' ').split(/\s+/);
+ for(var i=0;i<ws.length;i++){var w=ws[i];if(w.length>3&&w[0]>='A'&&w[0]<='Z'&&i>0)caps.push(w);}return nums.concat(caps.slice(0,3));}
+function ground(claim,el){var q=wikiQuery(claim);if(!q){el.innerHTML='no clear topic to look up';return;}
+ fetch(WIKI+'opensearch&limit=1&search='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(s){
+  var title=s[1][0],url=s[3][0];if(!title){el.innerHTML='📚 no Wikipedia article found for "'+q+'" — still unverified';return;}
+  return fetch(WIKI+'query&prop=extracts&exintro&explaintext&redirects=1&titles='+encodeURIComponent(title)).then(function(r){return r.json();}).then(function(e){
+   var pages=e.query.pages,ext=(pages[Object.keys(pages)[0]].extract||'').toLowerCase();
+   var kt=keyTerms(claim),found=[],miss=[];for(var i=0;i<kt.length;i++){(ext.indexOf(kt[i].toLowerCase())>=0?found:miss).push(kt[i]);}
+   var link='<a href="'+url+'" target="_blank" style="color:#0a6cff;text-decoration:underline">Wikipedia: '+title+'</a>';
+   if(kt.length===0)el.innerHTML='📚 '+link+' — open it to verify your claim';
+   else if(miss.length===0)el.innerHTML='📚 '+link+' — all your key details appear ('+found.join(', ')+'). Consistent with the source; click to confirm.';
+   else if(found.length>0)el.innerHTML='📚 '+link+' — confirms <b>'+found.join(', ')+'</b> but does NOT mention <b style="color:var(--wrong)">'+miss.join(', ')+'</b>. That part is unverified — check it.';
+   else el.innerHTML='📚 '+link+' — found the topic, but your specific details are not in the summary. Read it.';
+  });
+ }).catch(function(){el.innerHTML='📚 live lookup unavailable — still unverified';});}
 function run(){var text=document.getElementById('inp').value.replace(/^\s+|\s+$/g,'');var out=document.getElementById('out');if(!text){out.innerHTML='';return;}
  var claims=splitC(text),rows=[];for(var i=0;i<claims.length;i++)rows.push(classify(claims[i]));
  function cc(n){var k=0;for(var i=0;i<rows.length;i++)if(rows[i][0]===n)k++;return k;}
- var wrong=cc('WRONG'),correct=cc('CORRECT'),needs=cc('NEEDS A SOURCE'),sourced=cc('CITES A SOURCE');
+ var wrong=cc('WRONG'),correct=cc('CORRECT'),needs=cc('NEEDS A SOURCE');
  var head,hc,cov;
  if(wrong>0){hc='var(--wrong)';head='⛔ Do not trust this as-is';cov=wrong+' statement'+(wrong>1?'s are':' is')+' factually WRONG — the math does not add up.';}
  else if(correct>0&&needs===0){hc='var(--proven)';head='✅ The math checks out';cov='I recomputed '+correct+' calculation'+(correct>1?'s':'')+' — all correct.';}
- else if(correct>0){hc='var(--proven)';head='✅ Math is correct — some facts need a source';cov='I verified '+correct+' calculation'+(correct>1?'s':'')+' (all correct). '+needs+' other statement'+(needs>1?'s':'')+' I cannot confirm without a source.';}
- else {hc='var(--pred)';head='⚠️ I can’t confirm this answer';cov='This is '+claims.length+' statement'+(claims.length>1?'s':'')+' with no math to check'+(sourced?' ('+sourced+' cite a source)':'')+'. Nothing looks obviously wrong, but I have NOT verified the facts — checking facts against live sources is the feature coming next.';}
- var h='<div class="head" style="color:'+hc+'">'+head+'</div><div class="cov">'+cov+'</div>';
- h+='<details open><summary>show each statement ▾</summary>';
- for(var j=0;j<claims.length;j++){var L=rows[j];var wid=L[0]==='NEEDS A SOURCE'?' id="g'+j+'"':'';var wtxt=L[0]==='NEEDS A SOURCE'?'🔍 checking Wikipedia…':L[3];h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why"'+wid+'>'+wtxt+'</div></div></div>';}
- h+='</details>';out.innerHTML=h;for(var g=0;g<claims.length;g++){if(rows[g][0]==='NEEDS A SOURCE'){var el=document.getElementById('g'+g);if(el)ground(claims[g],el);}}}
-function sample(){document.getElementById('inp').value='Your refund is 3 × $400 = $1,200. There is a 70% chance of rain tomorrow. The new policy saves $50,000 × 1.1 = $60,000 a year. Thomas Edison built the first practical lightbulb in 1879.';run();}
+ else if(correct>0){hc='var(--proven)';head='✅ Math is correct — facts checked against sources below';cov='I verified '+correct+' calculation'+(correct>1?'s':'')+' (all correct). Grounding the other statements against Wikipedia…';}
+ else {hc='var(--pred)';head='Checking each statement';cov='No math here — grounding the factual statements against Wikipedia live…';}
+ var sj=SUBJ>0?' · subject: '+SUBJECTS[SUBJ][0]:'';
+ var h='<div class="head" style="color:'+hc+'">'+head+'</div><div class="cov">'+cov+sj+'</div><details open><summary>show each statement ▾</summary>';
+ for(var j=0;j<claims.length;j++){var L=rows[j];var wid=L[0]==='NEEDS A SOURCE'?' id="g'+j+'"':'';h+='<div class="claim"><span class="dot '+L[2]+'"></span><span class="lab '+L[1]+'">'+L[0]+'</span><div><div class="ctext">'+claims[j]+'</div><div class="why"'+wid+'>'+(L[0]==='NEEDS A SOURCE'?'🔍 checking Wikipedia…':L[3])+'</div></div></div>';}
+ h+='</details>';out.innerHTML=h;
+ for(var g=0;g<claims.length;g++){if(rows[g][0]==='NEEDS A SOURCE'){var el=document.getElementById('g'+g);if(el)ground(claims[g],el);}}}
+function sample(){document.getElementById('inp').value=SUBJECTS[SUBJ][2];run();}
 </script></body></html>
